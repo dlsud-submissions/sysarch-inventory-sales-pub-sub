@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="AccountingService.API/AccountingService.API.csproj" Id="47aaef2d-3d48-4a7e-8764-c51170c59cd5" />
   <Project Path="InventorySalesApp/InventorySalesApp.csproj" />
   <Project Path="InventoryService.API/InventoryService.API.csproj" Id="affd08b9-38a7-46aa-9ac6-6b5394fc0be5" />
 </Solution>
