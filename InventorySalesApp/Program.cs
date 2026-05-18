@@ -3,6 +3,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Register SalesOrderPublisher as singleton so it can be injected
+builder.Services.AddSingleton<InventorySalesApp.Services.SalesOrderPublisher>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
