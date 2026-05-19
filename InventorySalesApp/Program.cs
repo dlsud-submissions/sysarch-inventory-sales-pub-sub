@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Register SalesOrderPublisher as singleton so it can be injected
-builder.Services.AddSingleton<InventorySalesApp.Services.SalesOrderPublisher>();
+builder.Services.AddSingleton<InventorySalesApp.Services.ISalesOrderPublisher, InventorySalesApp.Services.SalesOrderPublisher>();
 // Register ServiceBusSetup to configure filters on startup
 builder.Services.AddSingleton<InventorySalesApp.Services.ServiceBusSetup>();
 
