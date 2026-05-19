@@ -1,0 +1,103 @@
+@model SalesOrderModel
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Banner -->
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle" style="font-size: 2rem; margin-right: 15px;"></i>
+                    <div>
+                        <h5 class="mb-0">Order Submitted Successfully!</h5>
+                        <p class="mb-0 mt-1">Your order has been published to the Service Bus and will be processed shortly.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Details Card -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-receipt"></i>
+                        Order Details
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase fw-bold">Order ID</h6>
+                            <p class="fs-5">@Model.OrderId</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase fw-bold">Product Name</h6>
+                            <p class="fs-5">@Model.ProductName</p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase fw-bold">Quantity</h6>
+                            <p class="fs-5">@Model.Quantity</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase fw-bold">Amount</h6>
+                            <p class="fs-5">@Model.Amount.ToString("C")</p>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase fw-bold">Order Type</h6>
+                            <p class="fs-5">
+                                @if (Model.OrderType == "Prepaid")
+                                {
+                                    <span class="badge bg-info">@Model.OrderType</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">@Model.OrderType</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted text-uppercase fw-bold">Status</h6>
+                            <p class="fs-5">
+                                @if (Model.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning">@Model.Status</span>
+                                }
+                                else if (Model.Status == "Fulfilled")
+                                {
+                                    <span class="badge bg-success">@Model.Status</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">@Model.Status</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2 mt-4 justify-content-center">
+                <a href="@Url.Action("PlaceOrder", "SalesOrder")" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus"></i>
+                    Place Another Order
+                </a>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
