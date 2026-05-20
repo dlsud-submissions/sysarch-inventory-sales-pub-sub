@@ -20,6 +20,7 @@
     <ProjectReference Include="..\InventorySalesApp\InventorySalesApp.csproj" />
     <ProjectReference Include="..\InventoryService.API\InventoryService.API.csproj" Aliases="InventoryServiceAPI" />
     <ProjectReference Include="..\AccountingService.API\AccountingService.API.csproj" Aliases="AccountingServiceAPI" />
+    <ProjectReference Include="..\SupplierService.API\SupplierService.API.csproj" Aliases="SupplierServiceAPI" />
   </ItemGroup>
 
   <ItemGroup>
