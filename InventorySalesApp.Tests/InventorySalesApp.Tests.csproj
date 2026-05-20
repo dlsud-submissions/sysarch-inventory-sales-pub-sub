@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InventorySalesApp\InventorySalesApp.csproj" />
+    <ProjectReference Include="..\InventoryService.API\InventoryService.API.csproj" Aliases="InventoryServiceAPI" />
   </ItemGroup>
 
   <ItemGroup>

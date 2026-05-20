@@ -9,12 +9,12 @@ namespace InventorySalesApp.Tests.Integration
 {
     public class ControllerIntegrationTests : IAsyncLifetime
     {
-        private WebApplicationFactory<Program> _factory;
+        private WebApplicationFactory<global::Program> _factory;
         private HttpClient _client;
 
         public async Task InitializeAsync()
         {
-            _factory = new WebApplicationFactory<Program>()
+            _factory = new WebApplicationFactory<global::Program>()
                 .WithWebHostBuilder(builder =>
                 {
                     // Configure test services if needed
