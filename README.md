@@ -14,9 +14,59 @@ Architecture diagram (Batch 1):
 - SupplierService.API (supplier microservice)
 - InventorySalesApp.Tests (xUnit tests)
 
-## Setup
+## Deployment
 
-1. dotnet build
-2. dotnet test
+### Live Deployment
 
-Ensure you store secrets using user secrets or environment variables. appsettings.json files should not be committed.
+The MVC Publisher is deployed to Azure App Service:
+
+**URL:** https://inventory-sales-app.azurewebsites.net
+
+**Status:** ![Deploy MVC Publisher to Azure App Service](https://github.com/dlsud-submissions/sysarch-inventory-sales-pub-sub/actions/workflows/deploy-mvc.yml/badge.svg)
+
+### Deployment Pipeline
+
+- **Trigger:** Push to `main` branch or manual workflow dispatch
+- **Build:** .NET 10 on Ubuntu
+- **Tests:** Unit tests only (no Integration/E2E in CI)
+- **Publish:** Release configuration to Azure App Service
+- **Environment Variables:** `CONNECTIONSTRINGS__SERVICEBUS` (set in Azure Portal)
+
+## Local Setup
+
+### Prerequisites
+
+- .NET 10 SDK
+- Azure CLI (optional, for local testing)
+- User Secrets configured with Service Bus connection string
+
+### Build and Test
+
+```bash
+# Restore dependencies
+dotnet restore
+
+# Build solution
+dotnet build
+
+# Run all tests
+dotnet test
+
+# Run unit tests only (no Azure connection required)
+dotnet test --filter "Category!=Integration&Category!=E2E"
+
+# Run integration tests (requires Azure connection string)
+dotnet test --filter "Category=Integration"
+```
+
+### User Secrets Setup
+
+Store your Azure Service Bus connection string locally:
+
+```bash
+dotnet user-secrets init --project InventorySalesApp
+
+dotnet user-secrets set "ConnectionStrings:ServiceBus" "<your-connection-string>" --project InventorySalesApp
+```
+
+**Important:** Ensure you store secrets using user secrets or environment variables. `appsettings.json` files should not be committed. The `.gitignore` file excludes all secrets files from version control.
