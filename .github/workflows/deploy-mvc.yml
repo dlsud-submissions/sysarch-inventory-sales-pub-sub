@@ -1,0 +1,48 @@
+name: Deploy MVC Publisher to Azure App Service
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'InventorySalesApp/**'
+      - '.github/workflows/deploy-mvc.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run unit tests
+      run: dotnet test --configuration Release --no-build --verbosity normal --filter "Category!=Integration&Category!=E2E" --logger "trx;LogFileName=test-results.trx"
+
+    - name: Publish MVC application
+      run: dotnet publish InventorySalesApp/InventorySalesApp.csproj -c Release -o ./publish
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: inventory-sales-app
+        slot-name: production
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+        package: ./publish
+
+    - name: Post-deployment smoke test
+      run: |
+        echo "Waiting for app to be ready..."
+        sleep 10
+        curl -f https://inventory-sales-app.azurewebsites.net/ || echo "App is starting up, may take a moment"
