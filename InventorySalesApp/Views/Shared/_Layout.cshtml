@@ -3,8 +3,10 @@
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
     var isSalesOrderPage = string.Equals(currentController, "SalesOrder", StringComparison.OrdinalIgnoreCase);
     var isPlaceOrderPage = isSalesOrderPage && string.Equals(currentAction, "PlaceOrder", StringComparison.OrdinalIgnoreCase);
+    var isDashboardPage = string.Equals(currentController, "Dashboard", StringComparison.OrdinalIgnoreCase);
     var homeLinkClass = isSalesOrderPage ? "nav-link text-white active" : "nav-link text-white";
     var placeOrderLinkClass = isPlaceOrderPage ? "nav-link text-white active" : "nav-link text-white";
+    var dashboardLinkClass = isDashboardPage ? "nav-link text-white active" : "nav-link text-white";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -16,13 +18,14 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/InventorySalesApp.styles.css" asp-append-version="true" />
+    @await RenderSectionAsync("HeadContent", required: false)
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand fw-bold" asp-area="" asp-controller="SalesOrder" asp-action="PlaceOrder">
-                    <span aria-hidden="true">📦</span>
+                    <span aria-hidden="true">&#x1F4E6;</span>
                     <strong>InventorySales</strong>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -41,6 +44,12 @@
                             <a class="@placeOrderLinkClass" asp-area="" asp-controller="SalesOrder" asp-action="PlaceOrder">
                                 <i class="fas fa-shopping-cart"></i>
                                 Place Order
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="@dashboardLinkClass" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                                <i class="fas fa-chart-line"></i>
+                                Dashboard
                             </a>
                         </li>
                     </ul>

@@ -1,0 +1,100 @@
+@model List<SubscriptionStatsViewModel>
+
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var filterLabels = new Dictionary<string, string>
+    {
+        ["inventory-subscription"] = "Receives all messages",
+        ["accounting-subscription"] = "Prepaid orders only",
+        ["supplier-subscription"] = "Low stock orders only"
+    };
+
+    static string ActiveBadgeClass(long count)
+    {
+        return count switch
+        {
+            0 => "badge bg-success",
+            >= 10 => "badge bg-danger",
+            _ => "badge bg-warning text-dark"
+        };
+    }
+
+    static string DeadLetterBadgeClass(long count)
+    {
+        return count == 0 ? "badge bg-success" : "badge bg-danger";
+    }
+
+    static string TransferBadgeClass(long count)
+    {
+        return count == 0 ? "badge bg-success" : "badge bg-warning text-dark";
+    }
+}
+
+@section HeadContent {
+    <meta http-equiv="refresh" content="30">
+}
+
+<div class="dashboard-header d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h3 mb-1">Service Bus Dashboard</h1>
+        <p class="text-muted mb-0">Live subscription message counts from Azure Service Bus.</p>
+    </div>
+    <div class="dashboard-refresh text-muted">
+        Refreshing in <span id="refresh-counter" class="badge text-bg-primary">30</span>s
+    </div>
+</div>
+
+@if (ViewData["DashboardError"] is string dashboardError)
+{
+    <div class="alert alert-warning dashboard-error-card" role="alert">
+        <strong>Dashboard unavailable.</strong> @dashboardError
+    </div>
+}
+
+<div class="row g-4">
+    @foreach (var stat in Model)
+    {
+        var filterLabel = filterLabels.TryGetValue(stat.SubscriptionName, out var label) ? label : "Custom filter";
+
+        <div class="col-md-6 col-xl-4">
+            <article class="dashboard-card h-100">
+                <div class="dashboard-card-header">
+                    <h2 class="h5 mb-2">
+                        <span aria-hidden="true">&#x1F4EC;</span>
+                        @stat.SubscriptionName
+                    </h2>
+                    <div class="text-muted">
+                        Status:
+                        <span class="status-dot bg-success" aria-hidden="true"></span>
+                        <span>@stat.Status</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-stat-list">
+                    <div class="dashboard-stat-row">
+                        <span>Active messages</span>
+                        <span class="@ActiveBadgeClass(stat.ActiveMessageCount)">@stat.ActiveMessageCount</span>
+                    </div>
+                    <div class="dashboard-stat-row">
+                        <span>Dead-letter</span>
+                        <span class="@DeadLetterBadgeClass(stat.DeadLetterMessageCount)">@stat.DeadLetterMessageCount</span>
+                    </div>
+                    <div class="dashboard-stat-row">
+                        <span>Transfer</span>
+                        <span class="@TransferBadgeClass(stat.TransferMessageCount)">@stat.TransferMessageCount</span>
+                    </div>
+                    <div class="dashboard-stat-row">
+                        <span>Total</span>
+                        <strong>@stat.TotalMessageCount</strong>
+                    </div>
+                </div>
+
+                <footer class="dashboard-card-footer">
+                    <div>Filter: @filterLabel</div>
+                    <div>Last refreshed: @stat.LastRefreshed.ToLocalTime().ToString("h:mm tt")</div>
+                </footer>
+            </article>
+        </div>
+    }
+</div>

@@ -32,4 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
     });
+
+    const counter = document.getElementById('refresh-counter');
+
+    if (counter) {
+        let remaining = 30;
+
+        setInterval(() => {
+            remaining--;
+            counter.textContent = remaining;
+
+            if (remaining <= 0) {
+                location.reload();
+            }
+        }, 1000);
+    }
 });
