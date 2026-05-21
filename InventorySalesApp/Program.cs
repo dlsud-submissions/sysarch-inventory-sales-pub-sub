@@ -31,8 +31,9 @@ _ = Task.Run(async () =>
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error");
 }
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 app.UseRouting();
 
 app.UseAuthorization();
