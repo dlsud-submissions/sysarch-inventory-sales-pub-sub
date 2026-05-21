@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    var isSalesOrderPage = string.Equals(currentController, "SalesOrder", StringComparison.OrdinalIgnoreCase);
+    var isPlaceOrderPage = isSalesOrderPage && string.Equals(currentAction, "PlaceOrder", StringComparison.OrdinalIgnoreCase);
+    var homeLinkClass = isSalesOrderPage ? "nav-link text-white active" : "nav-link text-white";
+    var placeOrderLinkClass = isPlaceOrderPage ? "nav-link text-white active" : "nav-link text-white";
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -14,8 +22,8 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand fw-bold" asp-area="" asp-controller="SalesOrder" asp-action="PlaceOrder">
-                    <i class="fas fa-boxes"></i>
-                    InventorySalesApp
+                    <span aria-hidden="true">📦</span>
+                    <strong>InventorySales</strong>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -24,13 +32,13 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="SalesOrder" asp-action="PlaceOrder">
+                            <a class="@homeLinkClass" asp-area="" asp-controller="SalesOrder" asp-action="PlaceOrder">
                                 <i class="fas fa-home"></i>
                                 Home
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-white" asp-area="" asp-controller="SalesOrder" asp-action="PlaceOrder">
+                            <a class="@placeOrderLinkClass" asp-area="" asp-controller="SalesOrder" asp-action="PlaceOrder">
                                 <i class="fas fa-shopping-cart"></i>
                                 Place Order
                             </a>
@@ -48,7 +56,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; @DateTime.Now.Year - InventorySalesApp
+            &copy; @DateTime.Now.Year - InventorySales
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
