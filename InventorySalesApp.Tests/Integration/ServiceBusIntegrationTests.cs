@@ -1,6 +1,8 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using Azure.Messaging.ServiceBus.Administration;
 using InventorySalesApp.Models;
+using InventorySalesApp.Services;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 
@@ -12,16 +14,19 @@ namespace InventorySalesApp.Tests.Integration
         private const string InventorySubscription = "inventory-subscription";
         private const string AccountingSubscription = "accounting-subscription";
         private const string SupplierSubscription = "supplier-subscription";
-        private const int DeliveryWaitMilliseconds = 2500;
+        private static readonly TimeSpan DeliveryTimeout = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(500);
 
         private readonly ServiceBusClient _client;
         private readonly ServiceBusSender _sender;
+        private readonly ServiceBusSetup _serviceBusSetup;
 
         public ServiceBusIntegrationTests()
         {
             var connectionString = GetServiceBusConnectionString();
             _client = new ServiceBusClient(connectionString);
             _sender = _client.CreateSender(TopicName);
+            _serviceBusSetup = new ServiceBusSetup(new ServiceBusAdministrationClient(connectionString), TopicName);
         }
 
         [Fact]
@@ -125,7 +130,7 @@ namespace InventorySalesApp.Tests.Integration
 
         public async Task InitializeAsync()
         {
-            await Task.CompletedTask;
+            await _serviceBusSetup.ConfigureFiltersAsync();
         }
 
         public async Task DisposeAsync()
@@ -160,28 +165,33 @@ namespace InventorySalesApp.Tests.Integration
             message.ApplicationProperties["OrderId"] = order.OrderId;
 
             await _sender.SendMessageAsync(message);
-            await Task.Delay(DeliveryWaitMilliseconds);
         }
 
         private async Task<bool> SubscriptionHasOrderAsync(string subscriptionName, string orderId)
         {
             await using var receiver = _client.CreateReceiver(TopicName, subscriptionName);
+            var deadline = DateTimeOffset.UtcNow.Add(DeliveryTimeout);
 
-            long? fromSequenceNumber = null;
-
-            for (var page = 0; page < 10; page++)
+            while (DateTimeOffset.UtcNow < deadline)
             {
-                IReadOnlyList<ServiceBusReceivedMessage> messages = fromSequenceNumber.HasValue
-                    ? await receiver.PeekMessagesAsync(maxMessages: 50, fromSequenceNumber: fromSequenceNumber.Value)
-                    : await receiver.PeekMessagesAsync(maxMessages: 50);
+                long? fromSequenceNumber = null;
 
-                if (messages.Count == 0)
-                    return false;
+                for (var page = 0; page < 20; page++)
+                {
+                    IReadOnlyList<ServiceBusReceivedMessage> messages = fromSequenceNumber.HasValue
+                        ? await receiver.PeekMessagesAsync(maxMessages: 50, fromSequenceNumber: fromSequenceNumber.Value)
+                        : await receiver.PeekMessagesAsync(maxMessages: 50);
 
-                if (messages.Any(message => IsMatchingOrder(message, orderId)))
-                    return true;
+                    if (messages.Count == 0)
+                        break;
 
-                fromSequenceNumber = messages[^1].SequenceNumber + 1;
+                    if (messages.Any(message => IsMatchingOrder(message, orderId)))
+                        return true;
+
+                    fromSequenceNumber = messages[^1].SequenceNumber + 1;
+                }
+
+                await Task.Delay(PollInterval);
             }
 
             return false;

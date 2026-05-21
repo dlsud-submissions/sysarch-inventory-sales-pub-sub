@@ -34,6 +34,8 @@ The MVC Publisher is deployed to Azure App Service:
 
 ## Local Setup
 
+See [docs/service-bus-testing.md](docs/service-bus-testing.md) for the live Service Bus rule setup and test verification workflow.
+
 ### Prerequisites
 
 - .NET 10 SDK
@@ -55,8 +57,11 @@ dotnet test
 # Run unit tests only (no Azure connection required)
 dotnet test --filter "Category!=Integration&Category!=E2E"
 
-# Run integration tests (requires Azure connection string)
-dotnet test --filter "Category=Integration"
+# Run live integration tests (requires Azure Service Bus)
+dotnet test InventorySalesApp.Tests/InventorySalesApp.Tests.csproj --filter "Category=Integration"
+
+# Run live end-to-end tests (requires Azure Service Bus)
+dotnet test InventorySalesApp.Tests/InventorySalesApp.Tests.csproj --filter "Category=E2E"
 ```
 
 ### User Secrets Setup
@@ -64,9 +69,9 @@ dotnet test --filter "Category=Integration"
 Store your Azure Service Bus connection string locally:
 
 ```bash
-dotnet user-secrets init --project InventorySalesApp
+dotnet user-secrets init --project InventorySalesApp.Tests
 
-dotnet user-secrets set "ConnectionStrings:ServiceBus" "<your-connection-string>" --project InventorySalesApp
+dotnet user-secrets set "ConnectionStrings:ServiceBus" "<your-connection-string>" --project InventorySalesApp.Tests
 ```
 
 **Important:** Ensure you store secrets using user secrets or environment variables. `appsettings.json` files should not be committed. The `.gitignore` file excludes all secrets files from version control.

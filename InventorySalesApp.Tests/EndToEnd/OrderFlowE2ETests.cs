@@ -4,6 +4,8 @@ extern alias SupplierServiceAPI;
 
 using System.Net;
 using System.Text.Json;
+using Azure.Messaging.ServiceBus.Administration;
+using InventorySalesApp.Services;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Xunit;
@@ -12,7 +14,8 @@ namespace InventorySalesApp.Tests.EndToEnd
 {
     public class OrderFlowE2ETests : IAsyncLifetime
     {
-        private const int ServiceBusDeliveryWaitMilliseconds = 3000;
+        private static readonly TimeSpan ServiceBusDeliveryTimeout = TimeSpan.FromSeconds(15);
+        private static readonly TimeSpan PollInterval = TimeSpan.FromMilliseconds(500);
 
         private WebApplicationFactory<global::Program> _mvcFactory = null!;
         private WebApplicationFactory<InventoryServiceAPI::Program> _inventoryFactory = null!;
@@ -31,13 +34,12 @@ namespace InventorySalesApp.Tests.EndToEnd
             var order = CreateOrder(orderType: "Prepaid", status: "Pending");
 
             var responseContent = await SubmitValidOrderAsync(order);
-            await Task.Delay(ServiceBusDeliveryWaitMilliseconds);
 
             Assert.Contains("Order Submitted Successfully!", responseContent);
             Assert.Contains(order["OrderId"], responseContent);
 
-            Assert.True(await InventoryContainsProductAsync(order["ProductName"]));
-            Assert.True(await AccountingContainsOrderAsync(order["OrderId"]));
+            Assert.True(await WaitForAsync(() => InventoryContainsProductAsync(order["ProductName"])));
+            Assert.True(await WaitForAsync(() => AccountingContainsOrderAsync(order["OrderId"])));
             Assert.False(await SupplierContainsProductAsync(order["ProductName"]));
         }
 
@@ -48,14 +50,13 @@ namespace InventorySalesApp.Tests.EndToEnd
             var order = CreateOrder(orderType: "Prepaid", status: "LowStock");
 
             var responseContent = await SubmitValidOrderAsync(order);
-            await Task.Delay(ServiceBusDeliveryWaitMilliseconds);
 
             Assert.Contains("Order Submitted Successfully!", responseContent);
             Assert.Contains(order["OrderId"], responseContent);
 
-            Assert.True(await InventoryContainsProductAsync(order["ProductName"]));
-            Assert.True(await AccountingContainsOrderAsync(order["OrderId"]));
-            Assert.True(await SupplierContainsProductAsync(order["ProductName"]));
+            Assert.True(await WaitForAsync(() => InventoryContainsProductAsync(order["ProductName"])));
+            Assert.True(await WaitForAsync(() => AccountingContainsOrderAsync(order["OrderId"])));
+            Assert.True(await WaitForAsync(() => SupplierContainsProductAsync(order["ProductName"])));
         }
 
         [Fact]
@@ -65,12 +66,11 @@ namespace InventorySalesApp.Tests.EndToEnd
             var order = CreateOrder(orderType: "COD", status: "Fulfilled");
 
             var responseContent = await SubmitValidOrderAsync(order);
-            await Task.Delay(ServiceBusDeliveryWaitMilliseconds);
 
             Assert.Contains("Order Submitted Successfully!", responseContent);
             Assert.Contains(order["OrderId"], responseContent);
 
-            Assert.True(await InventoryContainsProductAsync(order["ProductName"]));
+            Assert.True(await WaitForAsync(() => InventoryContainsProductAsync(order["ProductName"])));
             Assert.False(await AccountingContainsOrderAsync(order["OrderId"]));
             Assert.False(await SupplierContainsProductAsync(order["ProductName"]));
         }
@@ -92,8 +92,6 @@ namespace InventorySalesApp.Tests.EndToEnd
                 ["Amount"] = "-100"
             });
 
-            await Task.Delay(ServiceBusDeliveryWaitMilliseconds);
-
             Assert.Contains("Place a New Order", responseContent);
             Assert.DoesNotContain("Order Submitted Successfully!", responseContent);
 
@@ -105,6 +103,7 @@ namespace InventorySalesApp.Tests.EndToEnd
         public async Task InitializeAsync()
         {
             var connectionString = GetServiceBusConnectionString();
+            await new ServiceBusSetup(new ServiceBusAdministrationClient(connectionString), "orders").ConfigureFiltersAsync();
 
             _mvcFactory = CreateFactory<global::Program>(connectionString);
             _inventoryFactory = CreateFactory<InventoryServiceAPI::Program>(connectionString);
@@ -244,6 +243,21 @@ namespace InventorySalesApp.Tests.EndToEnd
                 {
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        private static async Task<bool> WaitForAsync(Func<Task<bool>> condition)
+        {
+            var deadline = DateTimeOffset.UtcNow.Add(ServiceBusDeliveryTimeout);
+
+            while (DateTimeOffset.UtcNow < deadline)
+            {
+                if (await condition())
+                    return true;
+
+                await Task.Delay(PollInterval);
             }
 
             return false;
