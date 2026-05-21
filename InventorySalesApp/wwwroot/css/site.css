@@ -170,6 +170,67 @@ body {
   }
 }
 
+.dashboard-header {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 1rem;
+}
+
+.dashboard-refresh {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.85rem;
+}
+
+.dashboard-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-card-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem;
+}
+
+.dashboard-stat-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.dashboard-stat-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dashboard-card-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  color: #6c757d;
+  display: grid;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding: 1rem;
+}
+
+.dashboard-error-card {
+  border-radius: 0.5rem;
+}
+
+.status-dot {
+  border-radius: 50%;
+  display: inline-block;
+  height: 0.65rem;
+  margin: 0 0.35rem;
+  width: 0.65rem;
+}
+
 @media (max-width: 575.98px) {
   .order-progress {
     grid-template-columns: 1fr;
