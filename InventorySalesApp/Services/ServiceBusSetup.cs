@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.Configuration;
 
@@ -45,10 +46,29 @@ namespace InventorySalesApp.Services
 
         public async Task ConfigureFiltersAsync()
         {
+            // Inventory should receive every order. Recreate this rule if the portal or a prior test run removed it.
+            try
+            {
+                var inventoryRule = new CreateRuleOptions("AllOrders", new TrueRuleFilter());
+                await _adminClient.CreateRuleAsync(_topicName, _inventorySubscription, inventoryRule).ConfigureAwait(false);
+            }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
+            {
+                // Ignore if already exists.
+            }
+            catch (Azure.RequestFailedException)
+            {
+                // Ignore if already exists.
+            }
+
             // For accounting subscription: remove $Default and add PrepaidOrdersOnly
             try
             {
                 await _adminClient.DeleteRuleAsync(_topicName, _accountingSubscription, "$Default").ConfigureAwait(false);
+            }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)
+            {
+                // Ignore if rule does not exist.
             }
             catch (Azure.RequestFailedException)
             {
@@ -60,6 +80,10 @@ namespace InventorySalesApp.Services
                 var prepaidRule = new CreateRuleOptions("PrepaidOrdersOnly", new SqlRuleFilter("OrderType = 'Prepaid'"));
                 await _adminClient.CreateRuleAsync(_topicName, _accountingSubscription, prepaidRule).ConfigureAwait(false);
             }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
+            {
+                // Ignore if already exists.
+            }
             catch (Azure.RequestFailedException)
             {
                 // Ignore if already exists
@@ -69,6 +93,10 @@ namespace InventorySalesApp.Services
             try
             {
                 await _adminClient.DeleteRuleAsync(_topicName, _supplierSubscription, "$Default").ConfigureAwait(false);
+            }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityNotFound)
+            {
+                // Ignore if rule does not exist.
             }
             catch (Azure.RequestFailedException)
             {
@@ -80,12 +108,14 @@ namespace InventorySalesApp.Services
                 var lowStockRule = new CreateRuleOptions("LowStockOnly", new SqlRuleFilter("Status = 'LowStock'"));
                 await _adminClient.CreateRuleAsync(_topicName, _supplierSubscription, lowStockRule).ConfigureAwait(false);
             }
+            catch (ServiceBusException ex) when (ex.Reason == ServiceBusFailureReason.MessagingEntityAlreadyExists)
+            {
+                // Ignore if already exists.
+            }
             catch (Azure.RequestFailedException)
             {
                 // Ignore
             }
-
-            // Do not modify inventory subscription - keep default rule
         }
     }
 }

@@ -86,11 +86,13 @@ namespace InventorySalesApp.Tests.Unit
         }
 
         [Fact]
-        public async Task ConfigureFiltersAsync_ShouldNotModify_InventorySubscription()
+        public async Task ConfigureFiltersAsync_ShouldCreateAllOrdersRule_ForInventorySubscription()
         {
             var topic = "orders";
             var mockAdmin = new Mock<ServiceBusAdministrationClient>(MockBehavior.Loose);
 
+            mockAdmin.Setup(a => a.CreateRuleAsync(topic, "inventory-subscription", It.Is<CreateRuleOptions>(r => r.Name == "AllOrders"), default))
+                     .Returns(Task.FromResult(Mock.Of<Response<RuleProperties>>()));
             mockAdmin.Setup(a => a.DeleteRuleAsync(topic, "accounting-subscription", "$Default", default))
                      .Returns(Task.FromResult(Mock.Of<Response>()));
             mockAdmin.Setup(a => a.CreateRuleAsync(topic, "accounting-subscription", It.Is<CreateRuleOptions>(r => r.Name == "PrepaidOrdersOnly"), default))
@@ -104,9 +106,8 @@ namespace InventorySalesApp.Tests.Unit
 
             await setup.ConfigureFiltersAsync();
 
-            // Verify that inventory-subscription was NOT modified (only accounting and supplier should be)
+            mockAdmin.Verify(a => a.CreateRuleAsync(topic, "inventory-subscription", It.Is<CreateRuleOptions>(r => r.Name == "AllOrders"), default), Times.Once());
             mockAdmin.Verify(a => a.DeleteRuleAsync(topic, "inventory-subscription", It.IsAny<string>(), default), Times.Never());
-            mockAdmin.Verify(a => a.CreateRuleAsync(topic, "inventory-subscription", It.IsAny<CreateRuleOptions>(), default), Times.Never());
         }
     }
 }
