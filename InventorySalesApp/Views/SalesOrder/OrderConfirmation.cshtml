@@ -2,102 +2,86 @@
 
 @{
     ViewData["Title"] = "Order Confirmation";
+    var submittedAt = DateTime.Now;
+
+    var orderTypeBadgeClass = Model.OrderType switch
+    {
+        "Prepaid" => "badge bg-info",
+        "COD" => "badge bg-warning text-dark",
+        _ => "badge bg-secondary"
+    };
+
+    var statusBadgeClass = Model.Status switch
+    {
+        "Pending" => "badge bg-secondary",
+        "Fulfilled" => "badge bg-success",
+        "LowStock" => "badge bg-danger",
+        _ => "badge bg-secondary"
+    };
 }
 
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <!-- Success Banner -->
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-check-circle" style="font-size: 2rem; margin-right: 15px;"></i>
-                    <div>
-                        <h5 class="mb-0">Order Submitted Successfully!</h5>
-                        <p class="mb-0 mt-1">Your order has been published to the Service Bus and will be processed shortly.</p>
-                    </div>
+            <section class="confirmation-card text-center">
+                <div class="confirmation-checkmark mx-auto mb-3" aria-hidden="true">
+                    <svg class="confirmation-checkmark-svg" viewBox="0 0 52 52">
+                        <circle class="confirmation-checkmark-circle" cx="26" cy="26" r="24" fill="none" />
+                        <path class="confirmation-checkmark-check" fill="none" d="M14 27l8 8 17-18" />
+                    </svg>
                 </div>
-            </div>
 
-            <!-- Order Details Card -->
-            <div class="card shadow-sm mt-4">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-receipt"></i>
-                        Order Details
-                    </h4>
+                <h1 class="h3 mb-2">Order Submitted Successfully!</h1>
+                <p class="text-muted mb-1">Your order has been published to the Service Bus and will be processed shortly.</p>
+                <p class="confirmation-timestamp mb-4">
+                    Submitted at: @submittedAt.ToString("MMMM d, yyyy h:mm tt")
+                </p>
+
+                <div class="table-responsive text-start">
+                    <table class="table table-bordered order-summary-table align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th scope="row">Order ID</th>
+                                <td>@Model.OrderId</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Product Name</th>
+                                <td>@Model.ProductName</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Quantity</th>
+                                <td>@Model.Quantity</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Amount</th>
+                                <td>@Model.Amount.ToString("C")</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Order Type</th>
+                                <td>
+                                    <span class="@orderTypeBadgeClass">@Model.OrderType</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Status</th>
+                                <td>
+                                    <span class="@statusBadgeClass">@Model.Status</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <h6 class="text-muted text-uppercase fw-bold">Order ID</h6>
-                            <p class="fs-5">@Model.OrderId</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted text-uppercase fw-bold">Product Name</h6>
-                            <p class="fs-5">@Model.ProductName</p>
-                        </div>
-                    </div>
 
-                    <hr />
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <h6 class="text-muted text-uppercase fw-bold">Quantity</h6>
-                            <p class="fs-5">@Model.Quantity</p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted text-uppercase fw-bold">Amount</h6>
-                            <p class="fs-5">@Model.Amount.ToString("C")</p>
-                        </div>
-                    </div>
-
-                    <hr />
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <h6 class="text-muted text-uppercase fw-bold">Order Type</h6>
-                            <p class="fs-5">
-                                @if (Model.OrderType == "Prepaid")
-                                {
-                                    <span class="badge bg-info">@Model.OrderType</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning">@Model.OrderType</span>
-                                }
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted text-uppercase fw-bold">Status</h6>
-                            <p class="fs-5">
-                                @if (Model.Status == "Pending")
-                                {
-                                    <span class="badge bg-warning">@Model.Status</span>
-                                }
-                                else if (Model.Status == "Fulfilled")
-                                {
-                                    <span class="badge bg-success">@Model.Status</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">@Model.Status</span>
-                                }
-                            </p>
-                        </div>
-                    </div>
+                <div class="d-flex flex-wrap gap-2 mt-4 justify-content-center">
+                    <a href="@Url.Action("PlaceOrder", "SalesOrder")" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus"></i>
+                        Place Another Order
+                    </a>
+                    <a href="@Url.Action("PlaceOrder", "SalesOrder")" class="btn btn-outline-secondary btn-lg">
+                        Back to Home
+                    </a>
                 </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="d-flex gap-2 mt-4 justify-content-center">
-                <a href="@Url.Action("PlaceOrder", "SalesOrder")" class="btn btn-primary btn-lg">
-                    <i class="fas fa-plus"></i>
-                    Place Another Order
-                </a>
-                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary btn-lg">
-                    Back to Home
-                </a>
-            </div>
+            </section>
         </div>
     </div>
 </div>
