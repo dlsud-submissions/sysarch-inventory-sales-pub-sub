@@ -21,6 +21,13 @@ body {
   margin-bottom: 60px;
 }
 
+.navbar-dark .navbar-nav .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 0.375rem;
+  box-shadow: inset 0 -0.2rem 0 rgba(255, 255, 255, 0.65);
+  font-weight: 700;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
@@ -28,4 +35,210 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+.order-card {
+  border: 0;
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.order-card-header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 52%, #198754 100%);
+  border-bottom: 0;
+  padding: 1rem 1.25rem;
+}
+
+.order-progress {
+  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(4rem, 8rem) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.order-progress-step {
+  align-items: center;
+  color: #6c757d;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.order-progress-step.active {
+  color: #0d6efd;
+}
+
+.order-progress-number {
+  align-items: center;
+  background: #e9ecef;
+  border-radius: 50%;
+  display: inline-flex;
+  font-weight: 700;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.order-progress-step.active .order-progress-number {
+  background: #0d6efd;
+  color: #fff;
+}
+
+.order-progress-label {
+  font-weight: 700;
+}
+
+.order-progress-line {
+  background: linear-gradient(90deg, #0d6efd, #ced4da);
+  height: 0.2rem;
+}
+
+.place-order-form .form-control:focus,
+.place-order-form .form-select:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.18);
+}
+
+.place-order-form .input-validation-error {
+  border-color: #dc3545;
+}
+
+.place-order-form .input-validation-error:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.18);
+}
+
+.place-order-form .field-validation-error.invalid-feedback {
+  display: block;
+}
+
+.input-group .invalid-feedback {
+  flex-basis: 100%;
+}
+
+.confirmation-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.12);
+  padding: 2rem;
+}
+
+.confirmation-checkmark {
+  height: 5rem;
+  width: 5rem;
+}
+
+.confirmation-checkmark-svg {
+  display: block;
+  height: 100%;
+  stroke: #198754;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+  width: 100%;
+}
+
+.confirmation-checkmark-circle {
+  animation: checkmark-draw 0.65s ease-out forwards;
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+}
+
+.confirmation-checkmark-check {
+  animation: checkmark-draw 0.45s ease-out 0.55s forwards;
+  stroke-dasharray: 35;
+  stroke-dashoffset: 35;
+}
+
+.confirmation-timestamp {
+  color: #495057;
+  font-weight: 600;
+}
+
+.order-summary-table th {
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 700;
+  width: 38%;
+}
+
+@keyframes checkmark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.dashboard-header {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 1rem;
+}
+
+.dashboard-refresh {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.85rem;
+}
+
+.dashboard-card {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.75rem 1.75rem rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-card-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem;
+}
+
+.dashboard-stat-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.dashboard-stat-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dashboard-card-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  color: #6c757d;
+  display: grid;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding: 1rem;
+}
+
+.dashboard-error-card {
+  border-radius: 0.5rem;
+}
+
+.status-dot {
+  border-radius: 50%;
+  display: inline-block;
+  height: 0.65rem;
+  margin: 0 0.35rem;
+  width: 0.65rem;
+}
+
+@media (max-width: 575.98px) {
+  .order-progress {
+    grid-template-columns: 1fr;
+  }
+
+  .order-progress-line {
+    height: 1.5rem;
+    justify-self: center;
+    width: 0.2rem;
+  }
 }

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace InventorySalesApp.Services
 {
-    public class SalesOrderPublisher
+    public class SalesOrderPublisher : ISalesOrderPublisher
     {
         private readonly ServiceBusClient _client;
         private readonly string _topicName;

@@ -5,11 +5,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <UserSecretsId>InventorySalesSystem.InventorySalesApp.Tests</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.8" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.9.3" />
@@ -18,6 +20,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InventorySalesApp\InventorySalesApp.csproj" />
+    <ProjectReference Include="..\InventoryService.API\InventoryService.API.csproj" Aliases="InventoryServiceAPI" />
+    <ProjectReference Include="..\AccountingService.API\AccountingService.API.csproj" Aliases="AccountingServiceAPI" />
+    <ProjectReference Include="..\SupplierService.API\SupplierService.API.csproj" Aliases="SupplierServiceAPI" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Integration\" />
     <Folder Include="EndToEnd\" />
   </ItemGroup>
 

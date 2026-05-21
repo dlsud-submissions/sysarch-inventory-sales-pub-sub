@@ -1,0 +1,135 @@
+@model SalesOrderModel
+
+@{
+    ViewData["Title"] = "Place Order";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="order-progress mb-4" aria-label="Order progress">
+                <div class="order-progress-step active">
+                    <span class="order-progress-number">1</span>
+                    <span class="order-progress-label">Fill Order</span>
+                </div>
+                <div class="order-progress-line"></div>
+                <div class="order-progress-step">
+                    <span class="order-progress-number">2</span>
+                    <span class="order-progress-label">Confirm</span>
+                </div>
+            </div>
+
+            <div class="card order-card">
+                <div class="card-header order-card-header bg-gradient text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-shopping-cart"></i>
+                        Place a New Order
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="PlaceOrder" asp-controller="SalesOrder" method="post" class="place-order-form">
+                        @if (ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Error!</strong> Please correct the errors below.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        }
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Order ID -->
+                        <div class="mb-3">
+                            <label asp-for="OrderId" class="form-label fw-bold">
+                                <i class="fas fa-receipt text-primary me-1"></i>
+                                Order ID
+                            </label>
+                            <input asp-for="OrderId" class="form-control" placeholder="e.g., ORD-2026-001" />
+                            <div class="form-text">max 50 characters</div>
+                            <span asp-validation-for="OrderId" class="invalid-feedback"></span>
+                        </div>
+
+                        <!-- Product Name -->
+                        <div class="mb-3">
+                            <label asp-for="ProductName" class="form-label fw-bold">
+                                <i class="fas fa-box text-primary me-1"></i>
+                                Product Name
+                            </label>
+                            <input asp-for="ProductName" class="form-control" placeholder="e.g., Wireless Headphones" />
+                            <span asp-validation-for="ProductName" class="invalid-feedback"></span>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="mb-3">
+                            <label asp-for="Quantity" class="form-label fw-bold">
+                                <i class="fas fa-hashtag text-primary me-1"></i>
+                                Quantity
+                            </label>
+                            <input asp-for="Quantity" type="number" class="form-control" placeholder="0" min="1" />
+                            <span asp-validation-for="Quantity" class="invalid-feedback"></span>
+                        </div>
+
+                        <!-- Order Type (Dropdown) -->
+                        <div class="mb-3">
+                            <label asp-for="OrderType" class="form-label fw-bold">
+                                <i class="fas fa-credit-card text-primary me-1"></i>
+                                Order Type
+                            </label>
+                            <select asp-for="OrderType" class="form-select">
+                                <option value="">-- Select Order Type --</option>
+                                <option value="Prepaid">Prepaid</option>
+                                <option value="COD">COD (Cash on Delivery)</option>
+                            </select>
+                            <span asp-validation-for="OrderType" class="invalid-feedback"></span>
+                        </div>
+
+                        <!-- Status (Dropdown) -->
+                        <div class="mb-3">
+                            <label asp-for="Status" class="form-label fw-bold">
+                                <i class="fas fa-clipboard-check text-primary me-1"></i>
+                                Status
+                            </label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="">-- Select Status --</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Fulfilled">Fulfilled</option>
+                                <option value="LowStock">Low Stock</option>
+                            </select>
+                            <span asp-validation-for="Status" class="invalid-feedback"></span>
+                        </div>
+
+                        <!-- Amount -->
+                        <div class="mb-4">
+                            <label asp-for="Amount" class="form-label fw-bold">
+                                <i class="fas fa-dollar-sign text-primary me-1"></i>
+                                Amount
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Amount" type="number" class="form-control" placeholder="0.00" step="0.01" min="0" />
+                                <span asp-validation-for="Amount" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg flex-grow-1 submit-order-button">
+                                <i class="fas fa-paper-plane"></i>
+                                <span class="submit-button-text">Submit Order</span>
+                            </button>
+                            <a href="@Url.Action("PlaceOrder", "SalesOrder")" class="btn btn-outline-secondary btn-lg">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
