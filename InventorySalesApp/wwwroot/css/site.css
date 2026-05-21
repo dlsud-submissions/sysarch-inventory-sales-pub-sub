@@ -29,3 +29,95 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.order-card {
+  border: 0;
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.order-card-header {
+  background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 52%, #198754 100%);
+  border-bottom: 0;
+  padding: 1rem 1.25rem;
+}
+
+.order-progress {
+  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(4rem, 8rem) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.order-progress-step {
+  align-items: center;
+  color: #6c757d;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.order-progress-step.active {
+  color: #0d6efd;
+}
+
+.order-progress-number {
+  align-items: center;
+  background: #e9ecef;
+  border-radius: 50%;
+  display: inline-flex;
+  font-weight: 700;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.order-progress-step.active .order-progress-number {
+  background: #0d6efd;
+  color: #fff;
+}
+
+.order-progress-label {
+  font-weight: 700;
+}
+
+.order-progress-line {
+  background: linear-gradient(90deg, #0d6efd, #ced4da);
+  height: 0.2rem;
+}
+
+.place-order-form .form-control:focus,
+.place-order-form .form-select:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.18);
+}
+
+.place-order-form .input-validation-error {
+  border-color: #dc3545;
+}
+
+.place-order-form .input-validation-error:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.18);
+}
+
+.place-order-form .field-validation-error.invalid-feedback {
+  display: block;
+}
+
+.input-group .invalid-feedback {
+  flex-basis: 100%;
+}
+
+@media (max-width: 575.98px) {
+  .order-progress {
+    grid-template-columns: 1fr;
+  }
+
+  .order-progress-line {
+    height: 1.5rem;
+    justify-self: center;
+    width: 0.2rem;
+  }
+}
