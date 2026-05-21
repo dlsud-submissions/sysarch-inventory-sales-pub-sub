@@ -7,6 +7,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<InventorySalesApp.Services.ISalesOrderPublisher, InventorySalesApp.Services.SalesOrderPublisher>();
 // Register ServiceBusSetup to configure filters on startup
 builder.Services.AddSingleton<InventorySalesApp.Services.ServiceBusSetup>();
+builder.Services.AddSingleton<InventorySalesApp.Services.ISubscriptionStatsService, InventorySalesApp.Services.SubscriptionStatsService>();
 
 var app = builder.Build();
 
